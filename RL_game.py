@@ -51,6 +51,7 @@ class RLGame:
         # Check for collisions with the snake's body
         if new_head in self.snake:
             print("Collision detected! Game over.")
+            print(f"Score: {len(self.snake)}")
             return -10, True  # Negative reward for collision with own body
 
         # Check for fruit
@@ -104,7 +105,11 @@ class RLGame:
 
                 # Render the game
                 self.render(screen)
-                clock.tick(20)  # Control game speed (10 frames per second)
+
+                # Show the score (snake length) at the top
+                self.show_score(screen)
+
+                clock.tick(100)  # Control game speed (10 frames per second)
 
         pygame.quit()
 
@@ -124,6 +129,11 @@ class RLGame:
             pygame.Rect(self.fruit[1] * self.cell_size, self.fruit[0] * self.cell_size, self.cell_size, self.cell_size)
         )
         pygame.display.flip()  # Update the display
+
+    def show_score(self, screen):
+        font = pygame.font.SysFont("Arial", 24)
+        score_text = font.render(f"Score: {len(self.snake)}", True, (255, 255, 255))
+        screen.blit(score_text, (10, 10))
 
 
 # Function to load the Q-table from the .pkl file

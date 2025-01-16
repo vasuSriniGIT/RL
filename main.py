@@ -39,9 +39,15 @@ class SnakeGame:
         head_x, head_y = self.snake[0]
         new_head = (head_x + self.direction[0], head_y + self.direction[1])
 
-        # Check for collisions
-        if not (0 <= new_head[0] < self.num_cells and 0 <= new_head[1] < self.num_cells) or new_head in self.snake:
-            return False  # Game over
+        # Wrap-around logic (snake re-enters from the other side)
+        new_head = (
+            new_head[0] % self.num_cells,  # Wrap around vertically
+            new_head[1] % self.num_cells   # Wrap around horizontally
+        )
+
+        # Check for collisions with the snake's body
+        if new_head in self.snake:
+            return False  # Game over (self-collision)
 
         # Check if the snake eats a fruit
         if new_head == self.fruit:
@@ -82,12 +88,17 @@ class SnakeGame:
         )
         pygame.display.flip()  # Update the display
 
+    def show_score(self, screen):
+        font = pygame.font.SysFont("Arial", 24)
+        score_text = font.render(f"Score: {len(self.snake)}", True, (255, 255, 255))
+        screen.blit(score_text, (10, 10))
+
 
 # Function to play manual game
 def play_manual_game():
     pygame.init()
     grid_size = 500
-    cell_size = 20
+    cell_size = 50
     game = SnakeGame(grid_size, cell_size)
 
     screen = pygame.display.set_mode((grid_size, grid_size))
@@ -111,20 +122,19 @@ def play_manual_game():
 
         # Step the game forward
         if not game.step():
+            print(f"Score: {len(game.snake)}")
             print("Game Over!")
             running = False
 
         # Render the game
         game.render(screen)
-        clock.tick(10)  # Control game speed (10 frames per second)
-
+        game.show_score(screen)
+        clock.tick(50)  # Control game speed (10 frames per second)
     pygame.quit()
-
 
 # Main function to run the game
 def main():
     play_manual_game()
-
 
 if __name__ == "__main__":
     main()
